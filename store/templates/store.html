@@ -1,0 +1,69 @@
+{% extends "frontstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %}飲品總覽{% endblock title%}
+
+{% block content%}
+<br />
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<script language="javascript">
+
+  alert('您沒有管理員的權限喔！');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<html>
+
+<head>
+  <title>Menu</title>
+  <style>
+    /* 樣式設定 */
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 5px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+    }
+
+    .menu-item .name {
+      font-weight: bold;
+    }
+
+    .menu-item .price {
+      color: #0767cd;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Menu</h1>
+  <div class="menu">
+    {% for beverage in beverages %}
+    <div class="menu-item">
+      <div class="name">{{ beverage.bname }}</div>
+      <div class="price">{{ beverage.price }} 元</div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+
+</html>
+{% endblock content%}

@@ -1,0 +1,42 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+
+{% endblock head %}
+
+{% block title %}飲品編輯{% endblock title%}
+
+{% block content%}
+
+<br />
+<div class="container-xl">
+  <br />
+  <form method="post" enctype=multipart/form-data action={{ url_for('manager.edit') }}>
+    <table class="table table-bordered">
+      <tr>
+        <th>飲品編號</th>
+        <td><input class="form-control" type="text" value="{{ data.飲品編號 }}" name="bid" readonly class="id_input"></td>
+      </tr>
+      <tr>
+        <th>飲品名稱</th>
+        <td><input class="form-control" type="text" value="{{ data.飲品名稱 }}" name="bname" required></td>
+      </tr>
+      <tr>
+        <th>飲品單價</th>
+        <td><input class="form-control" type="number" value="{{ data.飲品單價 }}" name="price"></td>
+      </tr>
+    </table>
+    
+    <center>
+      <div class="option">
+        <button class="btn btn-outline-success" type="submit">確定修改</button>
+        <a href="{{ url_for('manager.beverageManager') }}"><button class="btn btn-outline-danger">回飲品管理</button></a>
+      </div>
+    </center>
+
+  </form>
+</div>
+
+
+
+{% endblock content%}

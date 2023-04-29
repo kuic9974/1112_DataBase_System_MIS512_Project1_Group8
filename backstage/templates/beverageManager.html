@@ -1,0 +1,156 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %} 飲品管理 {% endblock title %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+
+<script language="javascript">
+
+    alert('您沒有使用者的權限喔！');
+
+</script>
+
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'failed' %}
+
+<script language="javascript">
+
+    alert('有使用者有使用到這筆資料，所以不能刪除');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'AddBeverageFailed' %}
+
+<script language="javascript">
+
+    alert('已有重複的飲品名稱');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<script>
+    $(document).ready(function () {
+        $("#keyword").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#product tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+&nbsp;
+&nbsp;
+<div class="d-flex justify-content-between container-xxl">
+    <div class="ml-auto">
+    </div>
+    <div class="ml-auto">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            新增飲品
+        </button>
+    </div>
+</div>
+
+<form method="post" enctype=multipart/form-data action={{ url_for('manager.add') }}>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">新增飲品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inputBeverageName" class="form-label">飲品名稱</label>
+                        <input type="text" class="form-control" id="inputBeverageName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputUnitPrice" class="form-label">飲品單價</label>
+                        <input type="number" class="form-control" id="inputUnitPrice" name="price" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">確定新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<br />
+
+<div class="container-xxl">
+
+    <form method='post' action={{ url_for('manager.beverageManager') }}>
+        <table id="manager" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="10%">
+                        <center>飲品編號</center>
+                    </th>
+                    <th width="20%">
+                        <center>飲品名稱</center>
+                    </th>
+                    <th width="15%">
+                        <center>飲品單價</center>
+                    </th>
+                    <th colspan="2">
+                        <center>資料操作</center>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="beverage">
+                {% for i in beverage_data %}
+                <tr>
+                    <td>
+                        <center>{{ i.飲品編號 }}</center>
+                    </td>
+                    <td>
+                        <center>{{ i.飲品名稱 }}</center>
+                    </td>
+                    <td>
+                        <center>{{ i.飲品單價 }}</center>
+                    </td>
+                    <td>
+                        <center><button type="submit" value="{{i.飲品編號}}" name="edit"
+                                class="btn btn-success">編輯飲品</button></center>
+                    </td>
+                    <td>
+                        <center><button type="submit" value="{{i.飲品編號}}" name="delete"
+                                onclick="return (confirm('你確定要刪除 \'{{ i.飲品名稱 }}\' 嗎？'))"
+                                class="btn btn-danger">刪除飲品</button></center>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </form>
+
+
+</div>
+
+<script>
+    function have_product() {
+        alert('有使用者使用到這筆資料，所以不能刪除');
+    }
+</script>
+
+{% endblock content %}

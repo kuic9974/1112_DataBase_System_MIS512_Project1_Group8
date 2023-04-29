@@ -1,0 +1,205 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% block title %}後台資料分析{% endblock title%}
+{% block content %}
+
+<div class="my-3 p-3 bg-body rounded shadow-sm">
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+          role="tab" aria-controls="nav-home" aria-selected="true">訂單數量分析</button>
+        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button"
+          role="tab" aria-controls="nav-contact" aria-selected="false">消費總額排名</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
+          role="tab" aria-controls="nav-profile" aria-selected="false">飲品銷量比較</button>
+      </div>
+    </nav>
+  </div>
+  <br />
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+      <center>
+        <div id="maina" class="container-fluid" style="width:1200px;height:500px"></div>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+      <center>
+        <div id="mainb" class="container-fluid" style="width: 1200px;height:500px"></div>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+      <center>
+        <div id="mainc" class="container-fluid" style="width: 1200px;height:500px"></div>
+      </center>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 以長條圖與折線圖分析各月訂單
+  var chartDoma = document.getElementById('maina');
+  var myCharta = echarts.init(chartDoma);
+  var revenue_month = {{ revenue_month| tojson}};
+  var count = {{ ordercount_month| tojson}};
+  var optiona = {
+    title: {
+      text: '各月訂單數量分析'
+    },
+    tooltip: {},
+    legend: {
+      data: ['訂單數量']
+    },
+    xAxis: {
+      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    yAxis: {},
+    series: [{
+      name: '銷售總額',
+      type: 'bar',
+      // symbol: 'circle',
+      symbolSize: 16,
+      data: revenue_month,
+      markPoint: {
+        data: [
+          { type: 'max', name: '銷量最高月份' },
+          { type: 'min', name: '銷量最低月份' }
+        ]
+      },
+      label: {
+        show: true,
+        position: 'top',
+        textStyle: {
+          fontSize: 15
+        }
+      }
+    },
+    {
+      //realtimeSort: true,
+      name: '訂單總數',
+      type: 'bar',
+      data: count,
+      label: {
+        show: true,
+        position: 'right',
+        valueAnimation: true
+      }
+    }
+    ],
+    legend: {
+      show: true
+    },
+  };
+
+  // 使用動態長條圖查看消費總額最多的會員
+  var chartDomb = document.getElementById('mainb');
+  var myChartb = echarts.init(chartDomb);
+  var totalpriceList = {{ totalpriceList| tojson}};
+  var nameList = {{ nameList| tojson}};
+  var countList = {{ countList| tojson}};
+  var optionb = {
+    title: {
+      text: '會員消費排名'
+    },
+    xAxis: {
+      max: 'dataMax'
+    },
+    yAxis: {
+      type: 'category',
+      data: nameList,
+      inverse: true,
+      animationDuration: 300,
+      animationDurationUpdate: 300,
+      max: 3
+    },
+    tooltip: {},
+    series: [
+      {
+        //realtimeSort: true,
+        name: '消費總額',
+        type: 'bar',
+        data: totalpriceList,
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        }
+      },
+      {
+        //realtimeSort: true,
+        name: '訂單總數',
+        type: 'bar',
+        data: countList,
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        }
+      }
+    ],
+    legend: {
+      show: true
+    },
+    animationDuration: 3000,
+    animationDurationUpdate: 3000,
+    animationEasing: 'linear',
+    animationEasingUpdate: 'linear'
+  };
+
+  // 以圓餅圖分析飲品銷量
+  var chartDomc = document.getElementById('mainc');
+  var myChartc = echarts.init(chartDomc);
+  var beverage_sale_count = {{ beverage_sale_count| tojson}};
+  var beverage_nameList = {{ beverage_nameList| tojson}};
+  var optionc = {
+    title: {
+      text: '各飲品銷量分析',
+      left: 'center',
+      top: 'center'
+    },
+    tooltip: {},
+    legend: {
+      orient: 'vertical',
+      //x: 'left',
+      x: 'right',
+      right: 1000,
+      data: beverage_nameList
+    },
+    series: [
+      {
+        type: 'pie',
+        data: beverage_sale_count,
+        radius: ['40%', '70%']
+      }
+    ]
+  };
+
+  function run() {
+    myChartb.setOption({
+      series: [
+        {
+          type: 'bar',
+          totalpriceList
+        }
+      ]
+    });
+  }
+
+  setTimeout(function () {
+    run();
+  }, 0);
+
+  setInterval(function () {
+    update();
+  }, 3000);
+
+  optiona && myCharta.setOption(optiona);
+  optionb && myChartb.setOption(optionb);
+  optionc && myChartc.setOption(optionc);
+
+</script>
+
+{% endblock content %}

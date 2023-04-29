@@ -1,0 +1,205 @@
+{% extends "frontstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %}下單介面-選擇飲料{% endblock title%}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+
+<script language="javascript">
+  alert('您沒有使用者的權限喔！');
+</script>
+
+{% endif %}
+{% endwith %}
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No Orderlist Detail' %}
+
+<script language="javascript">
+  alert('請選擇 or 填寫訂單明細內容並按新增!');
+</script>
+
+{% endif %}
+{% endwith %}
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'Sugar is null' %}
+
+<script language="javascript">
+  alert('甜度不能為空，請重新選擇');
+</script>
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'Ice is null' %}
+
+<script language="javascript">
+  alert('冰量不能為空，請重新選擇');
+</script>
+
+{% endif %}
+{% endwith %}
+
+<br />
+<div class="container-xl">
+  <br />
+  <form method="post" action={{ url_for('store.order') }}>
+    <table class="table table-bordered">
+      <div class="mb-1">
+        <label for="inputBeverageName" class="form-label">飲品名稱</label>
+        <!-- <input type="text" class="form-control" id="inputBeverageName" name="bname"> -->
+        <form>
+          <select id="inputBeverage" class="form-select form-select-sm" name="bname">
+            {% for b in beverage %}
+            <option value="{{b}}">{{ b.bname }} (單價:{{b.price}}元)</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+      <div>
+        <label for="inputBeverageSugar" class="form-label">甜度</label>
+        <select id="inputBeverageSugar" class="form-select form-select-sm" name="sugar">
+          <option selected disabled value="">請選擇甜度</option>
+          <option value="無糖">無糖</option>
+          <option value="微糖">微糖</option>
+          <option value="半糖">半糖</option>
+          <option value="少糖">少糖</option>
+          <option value="正常甜">正常甜</option>
+        </select>
+      </div>
+      <div>
+        <label for="inputBeverageIce" class="form-label">冰量</label>
+        <select id="inputBeverageIce" class="form-select form-select-sm" name="ice">
+          <option selected disabled value="">請選擇冰量</option>
+          <option value="去冰">去冰</option>
+          <option value="微冰">微冰</option>
+          <option value="半冰">半冰</option>
+          <option value="少冰">少冰</option>
+          <option value="正常冰">正常冰</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">加料</label>
+        <label class="form-label" style="color: red;">(為避免影響飲品整體口感，一種料只能加一份唷^O^~)</label>
+        <br>
+        <input type="checkbox" class="form-check-input" name="choice" value="珍珠" />珍珠(10元)
+        <input type="checkbox" class="form-check-input" name="choice" value="寒天晶球" />寒天晶球(10元)
+        <input type="checkbox" class="form-check-input" name="choice" value="椰果" />椰果(10元)
+        <input type="checkbox" class="form-check-input" name="choice" value="Oreo" />Oreo(10元)
+      </div>
+      <div class="mb-1">
+        <label for="inputDetailRemark" class="form-label">備註</label>
+        <input type="Textareas" class="form-control" id="inputDetailRemark" name="dRemark">
+      </div>
+    </table>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="d-flex justify-content-between container-xxl">
+      <div class="ml-auto"></div>
+      <div class="ml-auto">
+        <button type="submit" name="addDetail" class="btn btn-primary">增加</button>
+      </div>
+    </div>
+    <br />
+    <table id="manager" class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="8%">
+            <center>明細編號</center>
+          </th>
+          <th width="15%">
+            <center>飲品名稱</center>
+          </th>
+          <th width="5%">
+            <center>甜度</center>
+          </th>
+          <th width="5%">
+            <center>冰塊</center>
+          </th>
+          <th width="5%">
+            <center>單價</center>
+          </th>
+          <th width="15%">
+            <center>加料</center>
+          </th>
+          <th width="5%">
+            <center>小計</center>
+          </th>
+          <th width="30%">
+            <center>單品備註</center>
+          </th>
+          <th width="10%">
+            <center>資料操作</center>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="detail">
+        {% for i in data %}
+        <tr>
+          <td>
+            <center>{{ i.did }}</center>
+          </td>
+          <td>
+            <center>{{ i.bname }}</center>
+          </td>
+          <td>
+            <center>{{ i.sugar }}</center>
+          </td>
+          <td>
+            <center>{{ i.ice }}</center>
+          </td>
+          <td>
+            <center>{{ i.price }}</center>
+          </td>
+          <td>
+            <center>{{ i.choice }}</center>
+          </td>
+          <td>
+            <center>{{ i.subtotal }}</center>
+          </td>
+          <td>
+            <center>{{ i.dRemark }}</center>
+          </td>
+          <td>
+            <center><button type="submit" value="{{i.did}}" name="delete"
+                onclick="return (confirm('你確定要刪除 {{i.did}}:\'{{ i.bname }}\' 的項目嗎？'))"
+                class="btn btn-danger">刪除</button></center>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8" align="right">
+            <strong>總計：</strong>
+          </td>
+          <td>
+            <strong>{{ totalprice }}</strong> <!-- 這裡使用模板語言的變數來顯示總計值 -->
+          </td>
+          <!-- <td colspan="2"></td> -->
+        </tr>
+      </tfoot>
+    </table>
+    <div>
+      <center>
+        <div class="option">
+          <a href="{{ url_for('store.orderInfo') }}">
+            <button class="btn btn-success" type="submit" value="edit" name="next_step">下一步</button>
+          </a>
+        </div>
+      </center>
+    </div>
+  </form>
+</div>
+<br />
+{% endblock content%}
