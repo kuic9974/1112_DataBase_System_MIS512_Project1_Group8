@@ -11,7 +11,7 @@ password = 'OfVkxNNOD5'
 dsn = cx_Oracle.makedsn('140.117.69.60', 1521, service_name='ORCLPDB1')
 
 # pool
-pool = oracledb.SessionPool(user=user, password=password, dsn=dsn, min=2, max=20, increment=2, encoding='UTF-8', nencoding='UTF-8', threaded=True, timeout=60)
+pool = oracledb.SessionPool(user=user, password=password, dsn=dsn, min=2, max=1000, increment=2, encoding='UTF-8', nencoding='UTF-8', threaded=True, timeout=60)
 
 # 連線 Oracle
 # connection = cx_Oracle.connect(user=user, password=password, dsn=dsn)conda create -n <name> python anaconda
